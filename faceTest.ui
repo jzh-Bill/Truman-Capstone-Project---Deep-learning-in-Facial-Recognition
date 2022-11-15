@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>826</width>
-    <height>371</height>
+    <height>378</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -64,16 +64,9 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QListWidget" name="listWidget">
-      <item>
-       <property name="text">
-        <string>sb看你妈</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>有煞笔</string>
-       </property>
-      </item>
+      <property name="frameShape">
+       <enum>QFrame::WinPanel</enum>
+      </property>
      </widget>
     </item>
    </layout>
@@ -170,7 +163,7 @@
     <string>Faces Management</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="nameInput">
    <property name="geometry">
     <rect>
      <x>300</x>
@@ -206,7 +199,7 @@
   <widget class="Line" name="line_2">
    <property name="geometry">
     <rect>
-     <x>510</x>
+     <x>500</x>
      <y>10</y>
      <width>16</width>
      <height>351</height>
@@ -293,23 +286,10 @@
     <string>Unkown Person Activities</string>
    </property>
   </widget>
-  <widget class="QProgressBar" name="progressBar">
-   <property name="geometry">
-    <rect>
-     <x>320</x>
-     <y>340</y>
-     <width>181</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="value">
-    <number>24</number>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_8">
    <property name="geometry">
     <rect>
-     <x>210</x>
+     <x>270</x>
      <y>330</y>
      <width>131</width>
      <height>31</height>
@@ -324,10 +304,29 @@
     </font>
    </property>
    <property name="text">
-    <string>Traning Progress</string>
+    <string>Traning Progress:</string>
    </property>
    <property name="textFormat">
     <enum>Qt::PlainText</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>340</y>
+     <width>47</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Ready </string>
    </property>
   </widget>
  </widget>

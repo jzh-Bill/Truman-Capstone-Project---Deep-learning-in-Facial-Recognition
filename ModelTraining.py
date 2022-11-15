@@ -53,23 +53,23 @@ class Dataset:
             test_images = test_images.reshape(test_images.shape[0], img_rows, img_cols, img_channels)
             self.input_shape = (img_rows, img_cols, img_channels)
  
-        # 输出训练集、测试集的数量
-        print(train_images.shape[0], 'train samples')
-        print(test_images.shape[0], 'test samples')
-        # 我们的模型使用categorical_crossentropy作为损失函数，因此需要根据类别数量nb_classes将
-        # 类别标签进行one-hot编码使其向量化，在这里我们的类别只有两种，经过转化后标签数据变为二维
-        train_labels = np_utils.to_categorical(train_labels, nb_classes)
-        test_labels = np_utils.to_categorical(test_labels, nb_classes)
-        # 像素数据浮点化以便归一化
-        train_images = train_images.astype('float32')
-        test_images = test_images.astype('float32')
-        # 将其归一化,图像的各像素值归一化到0~1区间
-        train_images /= 255.0
-        test_images /= 255.0
-        self.train_images = train_images
-        self.test_images = test_images
-        self.train_labels = train_labels
-        self.test_labels = test_labels
+            # 输出训练集、测试集的数量
+            print(train_images.shape[0], 'train samples')
+            print(test_images.shape[0], 'test samples')
+            # 我们的模型使用categorical_crossentropy作为损失函数，因此需要根据类别数量nb_classes将
+            # 类别标签进行one-hot编码使其向量化，在这里我们的类别只有两种，经过转化后标签数据变为二维
+            train_labels = np_utils.to_categorical(train_labels, nb_classes)
+            test_labels = np_utils.to_categorical(test_labels, nb_classes)
+            # 像素数据浮点化以便归一化
+            train_images = train_images.astype('float32')
+            test_images = test_images.astype('float32')
+            # 将其归一化,图像的各像素值归一化到0~1区间
+            train_images /= 255.0
+            test_images /= 255.0
+            self.train_images = train_images
+            self.test_images = test_images
+            self.train_labels = train_labels
+            self.test_labels = test_labels
  
  
 # CNN网络模型类
@@ -83,7 +83,8 @@ class Model:
     def build_model(self, dataset, nb_classes=2):
         # 构建一个空的网络模型，它是一个线性堆叠模型，各神经网络层会被顺序添加，专业名称为序贯模型或线性堆叠模型
         self.model = Sequential()
- 
+
+        # 原始代码（一定要保留）
         # 以下代码将顺序添加CNN网络需要的各层，一个add就是一个网络层
         self.model.add(Conv2D(32, 3, 3, padding='same',
                                      input_shape=dataset.input_shape))  # 1 2维卷积层
@@ -110,12 +111,12 @@ class Model:
         self.model.add(Dropout(0.5))  # 16 Dropout层
         self.model.add(Dense(nb_classes))  # 17 Dense层
         self.model.add(Activation('softmax'))  # 18 分类层，输出最终结果
- 
+
         # 输出模型概况
         self.model.summary()
  
     # 训练模型
-    def train(self, dataset, batch_size=20, nb_epoch=100, data_augmentation=False):
+    def train(self, dataset, batch_size=20, nb_epoch=200, data_augmentation=False):
         sgd = SGD(lr=0.01, decay=1e-6,
                   momentum=0.9, nesterov=True)  # 采用SGD+momentum的优化器进行训练，首先生成一个优化器对象
         self.model.compile(loss='categorical_crossentropy',
@@ -156,6 +157,7 @@ class Model:
                                                   batch_size=batch_size),
                                                 epochs = nb_epoch,
                                                 validation_data=(dataset.test_images, dataset.test_labels))
+        return 'Finished'
  
     MODEL_PATH = './Model/face.model.h5'
  
@@ -205,7 +207,7 @@ class Model:
  
 if __name__ == '__main__':
     print("The program has reached in here!!!-----")
-    dataset = Dataset('FaceImageDate', '444')
+    dataset = Dataset('FaceImageDate', 'mingyang')
     dataset.load()
  
     # # 训练模型
@@ -215,14 +217,11 @@ if __name__ == '__main__':
     # 测试训练函数的代码
     model.train(dataset)
     
-    model.save_model(file_path='./Model/444.face.model.h5')
-
-
-
+    model.save_model(file_path='./Model/mingyang.face.model.h5')
 
     # # 评估模型
     model = Model()
-    model.load_model(file_path='./Model/444.face.model.h5')
+    model.load_model(file_path='./Model/mingyang.face.model.h5')
 
     # model_2 = Model()
     # model_2.load_model(file_path='./Model/mingyang.face.model.h5')
@@ -235,5 +234,5 @@ if __name__ == '__main__':
     # # result = model_3.face_predict(image2)
 
     # print("The final result is:", result)
-    # model.evaluate(dataset)
+    model.evaluate(dataset)
     del dataset
