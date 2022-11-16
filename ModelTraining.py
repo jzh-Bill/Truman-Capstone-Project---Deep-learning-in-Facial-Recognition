@@ -11,7 +11,7 @@ from keras.layers import Dense, Activation, Flatten, Dropout
 from keras.layers import Conv2D, MaxPool2D
 from keras.optimizers import SGD
 from keras.utils import np_utils
-from keras.models import load_model
+from keras.models import load_modelvscode
 from keras import backend as K
 from FaceDateSet import load_dataset, resize_image, IMAGE_SIZE
 import warnings
@@ -20,24 +20,25 @@ warnings.filterwarnings('ignore')
  
 class Dataset:
     def __init__(self, path_name, person_name):
-        # 训练集
+        # Traning set
         self.train_images = None
         self.train_labels = None
-        # 验证集
+        # validating set
         # self.valid_images = None
         # self.valid_labels = None
-        # 测试集
+        # test set
         self.test_images = None
         self.test_labels = None
-        # 数据加载路径
+        # image saving path
         self.path_name = path_name
-        # 当前库采用的维度顺序
+
+        # current image dimension order
         self.input_shape = None
         # Current person name
         self.person_name = person_name
  
     def load(self, img_rows=IMAGE_SIZE, img_cols=IMAGE_SIZE, img_channels=3, nb_classes=2):
-        # 加载数据集至内存
+        # load the image into RAM
         print("The path is:", self.path_name)
         images, labels = load_dataset(self.path_name, self.person_name)
         
@@ -53,17 +54,20 @@ class Dataset:
             test_images = test_images.reshape(test_images.shape[0], img_rows, img_cols, img_channels)
             self.input_shape = (img_rows, img_cols, img_channels)
  
-            # 输出训练集、测试集的数量
+            # print out the size of test set and train set
             print(train_images.shape[0], 'train samples')
             print(test_images.shape[0], 'test samples')
-            # 我们的模型使用categorical_crossentropy作为损失函数，因此需要根据类别数量nb_classes将
-            # 类别标签进行one-hot编码使其向量化，在这里我们的类别只有两种，经过转化后标签数据变为二维
+
+            # Our model uses categorical_crossentropy as the loss function, so it needs to be transformed according to the number of categories nb_classes 
+            # The category labels are one-hot encoded to make them vectorized, where we have only two categories, and after transformation the label data becomes two-dimensional
             train_labels = np_utils.to_categorical(train_labels, nb_classes)
             test_labels = np_utils.to_categorical(test_labels, nb_classes)
-            # 像素数据浮点化以便归一化
+            
+            # convert the pixel into floating number
             train_images = train_images.astype('float32')
             test_images = test_images.astype('float32')
-            # 将其归一化,图像的各像素值归一化到0~1区间
+
+            # Normalize the image by normalizing the pixel values to the interval 0~1
             train_images /= 255.0
             test_images /= 255.0
             self.train_images = train_images
@@ -72,7 +76,7 @@ class Dataset:
             self.test_labels = test_labels
  
  
-# CNN网络模型类
+# CNN model Class
 class Model:
     def __init__(self):
         self.model = None
@@ -81,51 +85,57 @@ class Model:
  
     # 建立模型
     def build_model(self, dataset, nb_classes=2):
-        # 构建一个空的网络模型，它是一个线性堆叠模型，各神经网络层会被顺序添加，专业名称为序贯模型或线性堆叠模型
+        # Construct an empty network model, which is a linear stacking model 
+        # where each neural network layer will be added sequentially, professionally 
+        # known as a sequential model or linear stacking model
+       
         self.model = Sequential()
 
-        # 原始代码（一定要保留）
-        # 以下代码将顺序添加CNN网络需要的各层，一个add就是一个网络层
+        # The following code will add the layers needed for the 
+        # CNN network in order, an add is a network layer
         self.model.add(Conv2D(32, 3, 3, padding='same',
-                                     input_shape=dataset.input_shape))  # 1 2维卷积层
-        self.model.add(Activation('relu'))  # 2 激活函数层
+                                     input_shape=dataset.input_shape))  # 1st 2D convolution layer 
+        self.model.add(Activation('relu'))  # 2nd Activation layer
  
-        self.model.add(Conv2D(32, 3, 3, padding='same'))  # 3 2维卷积层
-        self.model.add(Activation('relu'))  # 4 激活函数层
+        self.model.add(Conv2D(32, 3, 3, padding='same'))  # 3rd convolution layer
+        self.model.add(Activation('relu'))  # 4th Activation layer
  
-        self.model.add(MaxPool2D(pool_size=(2, 2)))  # 5 池化层
-        self.model.add(Dropout(0.25))  # 6 Dropout层
+        self.model.add(MaxPool2D(pool_size=(2, 2)))  # 5th Max pooling layer
+        self.model.add(Dropout(0.25))  # 6th Dropout layer
  
-        self.model.add(Conv2D(64, 3, 3, padding='same'))  # 7  2维卷积层
-        self.model.add(Activation('relu'))  # 8  激活函数层
+        self.model.add(Conv2D(64, 3, 3, padding='same'))  # 7th   2D convolution layer
+        self.model.add(Activation('relu'))  # 8th  Activation layer
  
-        self.model.add(Conv2D(64, 3, 3, padding='same'))  # 9  2维卷积层
-        self.model.add(Activation('relu'))  # 10 激活函数层
+        self.model.add(Conv2D(64, 3, 3, padding='same'))  # 9  2D convolution layer
+        self.model.add(Activation('relu'))  # 10th 激活函数层
  
-        self.model.add(MaxPool2D(pool_size=(2, 2), padding='same'))  # 11 池化层
-        self.model.add(Dropout(0.25))  # 12 Dropout层
+        self.model.add(MaxPool2D(pool_size=(2, 2), padding='same'))  # 11th 池化层
+        self.model.add(Dropout(0.25))  # 12th Dropout layer
  
-        self.model.add(Flatten())  # 13 Flatten层
-        self.model.add(Dense(512))  # 14 Dense层,又被称作全连接层
-        self.model.add(Activation('relu'))  # 15 激活函数层
-        self.model.add(Dropout(0.5))  # 16 Dropout层
-        self.model.add(Dense(nb_classes))  # 17 Dense层
-        self.model.add(Activation('softmax'))  # 18 分类层，输出最终结果
+        self.model.add(Flatten())  # 13th Flatten layer
+        self.model.add(Dense(512))  # 14th Dense layer
+        self.model.add(Activation('relu'))  # 15th Activation layer
+        self.model.add(Dropout(0.5))  # 16th Dropout layer
+        self.model.add(Dense(nb_classes))  # 17th Dense layer
+        self.model.add(Activation('softmax'))  # 18th classification output the result
 
-        # 输出模型概况
+        # the summary of the model
         self.model.summary()
  
-    # 训练模型
+    # Model training
     def train(self, dataset, batch_size=20, nb_epoch=64, data_augmentation=False):
-        sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)  # 采用SGD+momentum的优化器进行训练，首先生成一个优化器对象
+        sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)  # An optimizer with SGD+momentum is used for training, and an optimizer object is first generated
         self.model.compile(loss='categorical_crossentropy',
                            optimizer=sgd,
-                           metrics=['accuracy'])  # 完成实际的模型配置工作
+                           metrics=['accuracy'])  #Complete the actual model configuration work
 
 
  
-        # 不使用数据提升，所谓的提升就是从我们提供的训练数据中利用旋转、翻转、加噪声等方法创造新的
-        # 训练数据，有意识的提升训练数据规模，增加模型训练量
+        # Without using data boosting, so-called boosting is the creation of 
+        # new from the training data we provide using methods such as rotation, 
+        # flipping, adding noise, etc.
+        # Training data, consciously increase the size of 
+        # training data and increase the amount of model training
         if data_augmentation:
             self.model.fit(dataset.train_images,
                            dataset.train_labels,
@@ -133,27 +143,30 @@ class Model:
                            epochs=nb_epoch,
                            validation_data=(dataset.test_images, dataset.test_labels),
                            shuffle=True)
-        # 使用实时数据提升
+        # use real-time data augmentation
         else:
-            print("使用了数据提升")
-            # 定义数据生成器用于数据提升，其返回一个生成器对象datagen，datagen每被调用一
-            # 次其生成一组数据（顺序生成），节省内存，其实就是python的数据生成器
+            print("Data Augmentation has been used")
+
+            # Define a data generator for data lifting, which returns a generator object 
+            # datagen, which generates a set of data (sequential generation) every time 
+            # it is called, saving memory, which is actually python's data generator
             datagen = ImageDataGenerator(
-                featurewise_center=False,  # 是否使输入数据去中心化（均值为0），
-                samplewise_center=False,  # 是否使输入数据的每个样本均值为0
-                featurewise_std_normalization=False,  # 是否数据标准化（输入数据除以数据集的标准差）
-                samplewise_std_normalization=False,  # 是否将每个样本数据除以自身的标准差
-                zca_whitening=False,  # 是否对输入数据施以ZCA白化
-                rotation_range=20,  # 数据提升时图片随机转动的角度(范围为0～180)
-                width_shift_range=0.2,  # 数据提升时图片水平偏移的幅度（单位为图片宽度的占比，0~1之间的浮点数）
-                height_shift_range=0.2,  # 同上，只不过这里是垂直
-                horizontal_flip=True,  # 是否进行随机水平翻转
-                vertical_flip=False)  # 是否进行随机垂直翻转
+                featurewise_center=False,  # whether to decenter the input data (with a mean of 0).
+                samplewise_center=False,  # Whether to make the mean value of each sample of the input data 0
+                featurewise_std_normalization=False,  # Whether the data is normalized (input data divided by the standard deviation of the data set)
+                samplewise_std_normalization=False,  # Whether to divide each sample data by its own standard deviation
+                zca_whitening=False,  # Whether to apply ZCA whitening to the input data
+                rotation_range=20,  # The angle of random rotation of the picture during data lifting (range 0 to 180)
+                width_shift_range=0.2,  # The magnitude of the horizontal offset of the picture when 
+                                        #the data is lifted (in units of the percentage of the picture width, a floating point number between 0 and 1)
+                height_shift_range=0.2,  # Same as above, except here it is vertical
+                horizontal_flip=True,  # Whether to perform random horizontal flipping
+                vertical_flip=False)  # Whether to perform random vertical flipping
  
-            # 计算整个训练样本集的数量以用于特征值归一化、ZCA白化等处理
+            # Calculate the number of the entire training sample set for eigenvalue normalization, ZCA whitening, etc.
             datagen.fit(dataset.train_images)
  
-            # 利用生成器开始训练模型
+            # Start training the model with the generator
             self.model.fit_generator(datagen.flow(dataset.train_images, dataset.train_labels,
                                                   batch_size=batch_size),
                                                 epochs = nb_epoch,
@@ -181,19 +194,19 @@ class Model:
         print(f'{self.model.metrics_names[1]}:{score[1] * 100}%')
  
 
-    # 识别人脸
+    # Face Recognition
     def face_predict(self, image):
-        # 依然是根据后端系统确定维度顺序
+        # Still determine the dimension order based on the back-end system
         #if K.image_dim_ordering() == 'th' 
         if K.image_data_format() == 'channels_first'and image.shape != (1, 3, IMAGE_SIZE, IMAGE_SIZE):
-            image = resize_image(image)  # 尺寸必须与训练集一致都应该是IMAGE_SIZE x IMAGE_SIZE
-            image = image.reshape((1, 3, IMAGE_SIZE, IMAGE_SIZE))  # 与模型训练不同，这次只是针对1张图片进行预测
+            image = resize_image(image)  # The size must be consistent with the training set all should be IMAGE_SIZE x IMAGE_SIZE
+            image = image.reshape((1, 3, IMAGE_SIZE, IMAGE_SIZE))  # Unlike the model training, this time it only predicts for 1 image
         #elif K.image_dim_ordering() == 'tf' 
         elif K.image_data_format() == 'channels_last'and image.shape != (1, IMAGE_SIZE, IMAGE_SIZE, 3):
             image = resize_image(image)
             image = image.reshape((1, IMAGE_SIZE, IMAGE_SIZE, 3))
  
-            # 浮点并归一化
+        # Normalized the floating number
         image = image.astype('float32')
         image /= 255.0
 
@@ -201,7 +214,8 @@ class Model:
 
         print("This is the model of: ", self.get_person_name())
         print("The data type of results:", result)
-        # 返回类别预测结果
+
+        # return the final result
         if result[0][0] > result[0][1]:
             return 'T', result[0][0]
         else:
@@ -212,16 +226,16 @@ if __name__ == '__main__':
     dataset = Dataset('FaceImageDate', 'mingyang')
     dataset.load()
  
-    # # # 训练模型
+    # train the model
     model = Model()
     model.build_model(dataset)
     
-    # 测试训练函数的代码
+    # test the model
     model.train(dataset)
     
     model.save_model(file_path='./Model/mingyang.face.model.h5')
 
-    # # # 评估模型
+    # # # evaluate the model
     # model = Model()
     # model.load_model(file_path='./Model/mingyang.face.model.h5')
 
