@@ -116,12 +116,13 @@ class Model:
         self.model.summary()
  
     # 训练模型
-    def train(self, dataset, batch_size=20, nb_epoch=200, data_augmentation=False):
-        sgd = SGD(lr=0.01, decay=1e-6,
-                  momentum=0.9, nesterov=True)  # 采用SGD+momentum的优化器进行训练，首先生成一个优化器对象
+    def train(self, dataset, batch_size=20, nb_epoch=64, data_augmentation=False):
+        sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)  # 采用SGD+momentum的优化器进行训练，首先生成一个优化器对象
         self.model.compile(loss='categorical_crossentropy',
                            optimizer=sgd,
                            metrics=['accuracy'])  # 完成实际的模型配置工作
+
+
  
         # 不使用数据提升，所谓的提升就是从我们提供的训练数据中利用旋转、翻转、加噪声等方法创造新的
         # 训练数据，有意识的提升训练数据规模，增加模型训练量
@@ -157,6 +158,7 @@ class Model:
                                                   batch_size=batch_size),
                                                 epochs = nb_epoch,
                                                 validation_data=(dataset.test_images, dataset.test_labels))
+
         return 'Finished'
  
     MODEL_PATH = './Model/face.model.h5'
@@ -206,11 +208,11 @@ class Model:
             return 'F', result[0][1]
  
 if __name__ == '__main__':
-    print("The program has reached in here!!!-----")
+    # print("The program has reached in here!!!-----")
     dataset = Dataset('FaceImageDate', 'mingyang')
     dataset.load()
  
-    # # 训练模型
+    # # # 训练模型
     model = Model()
     model.build_model(dataset)
     
@@ -219,20 +221,21 @@ if __name__ == '__main__':
     
     model.save_model(file_path='./Model/mingyang.face.model.h5')
 
-    # # 评估模型
-    model = Model()
-    model.load_model(file_path='./Model/mingyang.face.model.h5')
+    # # # 评估模型
+    # model = Model()
+    # model.load_model(file_path='./Model/mingyang.face.model.h5')
 
     # model_2 = Model()
     # model_2.load_model(file_path='./Model/mingyang.face.model.h5')
-    # model_3 = Model()
-    # model_3.load_model(file_path='./Model/jinbo.face.model.h5')
+    # # # model_3 = Model()
+    # # # model_3.load_model(file_path='./Model/jinbo.face.model.h5')
 
-    # image2 = cv.imread("11_197.jpg")
-    # result = model.face_predict(image2)
-    # # result = model_2.face_predict(image2)
-    # # result = model_3.face_predict(image2)
+    # image2 = cv.imread("1_79.jpg")
+    # result = model_2.face_predict(image2)
+    # print(result)
+    # # # # result = model_2.face_predict(image2)
+    # # # # result = model_3.face_predict(image2)
 
-    # print("The final result is:", result)
-    model.evaluate(dataset)
-    del dataset
+    # # # print("The final result is:", result)
+    # # # model.evaluate(dataset)
+    # # del dataset

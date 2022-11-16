@@ -225,20 +225,39 @@ class Ui_Form(object):
         self.nameInput.setText("")
         saving_path=path(person_name)
         self.training_status.setText("Training")
-        CatchPICFromVideo(saving_path,200)
+        
+        CatchPICFromVideo(saving_path,300)
 
+        # Start model training
         dataset = Dataset('FaceImageDate', person_name)
         dataset.load()
 
-        # Start model training
         model = Model()
-
         model.build_model(dataset)
-
         model.train(dataset)
-        self.training_status.setText("Finished")
-
         model.save_model(file_path="./Model/" + person_name + ".face.model.h5")
+
+        #---------------------------------
+        # The code below is used when adding up new faces and re-train the existed models.
+        # The reason why we need to re-train is because the previous model may recognize the new faces with 
+        # a high confidence, and this may interrupt the final result. Thus it is necessary
+        if self.number_of_models() >= 2:
+            models_path = "./Model"
+            print("Here I come!!!!")
+            for model_name in os.listdir(models_path): # loop through the directory
+                selected_person_name = model_name[:-14] # get the person name
+                
+                if person_name != selected_person_name: # select all other models
+                    temp_dataset = Dataset('FaceImageDate', selected_person_name)
+                    temp_dataset.load()
+
+                    temp_model = Model()
+                    temp_model.build_model(temp_dataset)
+                    temp_model.train(temp_dataset) #re-train the model
+                    temp_model.save_model(file_path="./Model/" + selected_person_name + ".face.model.h5")
+        #---------------------------------
+        
+        self.training_status.setText("Finished")
 
         # Start to Evaluate the model
         model = Model()
@@ -248,6 +267,18 @@ class Ui_Form(object):
         self.initial_models_list()
 
         del dataset
+
+
+    def number_of_models(self):
+        count = 0
+        for path in os.listdir("./Model"):
+            # check if current path is a file
+            if os.path.isfile(os.path.join("./Model", path)):
+                count += 1
+        return count
+
+
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
