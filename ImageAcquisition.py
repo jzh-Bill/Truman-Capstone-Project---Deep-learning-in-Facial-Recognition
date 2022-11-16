@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-__author__ = '翁飞龙'
 import cv2
 import numpy as np
 import os
 
 def path(person_name):
-    path="./FaceImageDate/" + str(person_name)
+    path="./FaceImageData/" + str(person_name)
     path=path.strip()
     path=path.rstrip("\\")
     isExists=os.path.exists(path)

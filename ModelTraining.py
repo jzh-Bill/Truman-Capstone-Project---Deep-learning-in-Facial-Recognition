@@ -223,7 +223,7 @@ class Model:
  
 if __name__ == '__main__':
     # print("The program has reached in here!!!-----")
-    dataset = Dataset('FaceImageDate', 'mingyang')
+    dataset = Dataset('FaceImageData', 'mingyang')
     dataset.load()
  
     # train the model

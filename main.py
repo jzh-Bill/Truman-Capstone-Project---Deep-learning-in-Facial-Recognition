@@ -198,7 +198,7 @@ class Ui_Form(object):
         else:
             print("Model does not exist")
 
-        image_data_path = "./FaceImageDate/" + model_name
+        image_data_path = "./FaceImageData/" + model_name
         if os.path.isdir(image_data_path):
             shutil.rmtree(image_data_path)
             # os.remove(image_data_path)
@@ -229,7 +229,7 @@ class Ui_Form(object):
         CatchPICFromVideo(saving_path,300)
 
         # Start model training
-        dataset = Dataset('FaceImageDate', person_name)
+        dataset = Dataset('FaceImageData', person_name)
         dataset.load()
 
         model = Model()
@@ -248,7 +248,7 @@ class Ui_Form(object):
                 selected_person_name = model_name[:-14] # get the person name
                 
                 if person_name != selected_person_name: # select all other models
-                    temp_dataset = Dataset('FaceImageDate', selected_person_name)
+                    temp_dataset = Dataset('FaceImageData', selected_person_name)
                     temp_dataset.load()
 
                     temp_model = Model()

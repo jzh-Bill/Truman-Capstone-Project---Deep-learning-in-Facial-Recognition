@@ -65,7 +65,7 @@ def load_dataset(path, name):
     return images, labels
  
 if __name__ == '__main__':
-    images, labels = load_dataset("FaceImageDate", "jinbo")
+    images, labels = load_dataset("FaceImageData", "jinbo")
     # for img in images:
     #     cv2.imshow('123', img)
     #     cv2.waitKey(0)
