@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-__author__ = '翁飞龙'
 import cv2 as cv
 import random
 import numpy as np
@@ -11,9 +10,9 @@ from keras.layers import Dense, Activation, Flatten, Dropout
 from keras.layers import Conv2D, MaxPool2D
 from keras.optimizers import SGD
 from keras.utils import np_utils
-from keras.models import load_modelvscode
 from keras import backend as K
 from FaceDateSet import load_dataset, resize_image, IMAGE_SIZE
+from keras.models import load_model
 import warnings
 warnings.filterwarnings('ignore')
  
@@ -103,13 +102,13 @@ class Model:
         self.model.add(MaxPool2D(pool_size=(2, 2)))  # 5th Max pooling layer
         self.model.add(Dropout(0.25))  # 6th Dropout layer
  
-        self.model.add(Conv2D(64, 3, 3, padding='same'))  # 7th   2D convolution layer
+        self.model.add(Conv2D(64, 3, 3, padding='same'))  # 7th  2D convolution layer
         self.model.add(Activation('relu'))  # 8th  Activation layer
  
         self.model.add(Conv2D(64, 3, 3, padding='same'))  # 9  2D convolution layer
-        self.model.add(Activation('relu'))  # 10th 激活函数层
+        self.model.add(Activation('relu'))  # 10th Activation layer
  
-        self.model.add(MaxPool2D(pool_size=(2, 2), padding='same'))  # 11th 池化层
+        self.model.add(MaxPool2D(pool_size=(2, 2), padding='same'))  # 11th max pooling layer
         self.model.add(Dropout(0.25))  # 12th Dropout layer
  
         self.model.add(Flatten())  # 13th Flatten layer
@@ -174,12 +173,11 @@ class Model:
 
         return 'Finished'
  
-    MODEL_PATH = './Model/face.model.h5'
  
-    def save_model(self, file_path=MODEL_PATH):
+    def save_model(self, file_path):
         self.model.save(file_path)
  
-    def load_model(self, file_path=MODEL_PATH):
+    def load_model(self, file_path):
         self.model = load_model(file_path)
     
     def load_person_name(self, person_name):
@@ -226,14 +224,14 @@ if __name__ == '__main__':
     dataset = Dataset('FaceImageData', 'mingyang')
     dataset.load()
  
-    # train the model
+    # # train the model
     model = Model()
     model.build_model(dataset)
     
-    # test the model
-    model.train(dataset)
+    # # test the model
+    # model.train(dataset)
     
-    model.save_model(file_path='./Model/mingyang.face.model.h5')
+    # model.save_model(file_path='./Model/mingyang.face.model.h5')
 
     # # # evaluate the model
     # model = Model()
